@@ -7,6 +7,9 @@ import (
 
 // Storager is the interface that a Grafeas storage implementation would provide
 type Storager interface {
+	// CreateProejct adds the specified project
+	CreateProject(pID string) *errors.AppError
+
 	// CreateNote adds the specified note
 	CreateNote(n *swagger.Note) *errors.AppError
 

@@ -30,12 +30,23 @@ type memStore struct {
 	occurrencesByID map[string]swagger.Occurrence
 	notesByID       map[string]swagger.Note
 	opsByID         map[string]swagger.Operation
+	projects        map[string]bool
 }
 
 // NewMemStore creates a memStore with all maps initialized.
 func NewMemStore() server.Storager {
 	return &memStore{make(map[string]swagger.Occurrence), make(map[string]swagger.Note),
-		make(map[string]swagger.Operation)}
+		make(map[string]swagger.Operation), make(map[string]bool)}
+}
+
+// CreateProject adds the specified project to the mem store
+func (m *memStore) CreateProject(pID string) *errors.AppError {
+	if _, ok := m.projects[pID]; ok {
+		return &errors.AppError{Err: fmt.Sprintf("Project with name %q already exists", pID),
+			StatusCode: http.StatusBadRequest}
+	}
+	m.projects[pID] = true
+	return nil
 }
 
 // CreateOccurrence adds the specified occurrence to the mem store

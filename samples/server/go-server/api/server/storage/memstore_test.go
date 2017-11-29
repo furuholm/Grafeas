@@ -15,14 +15,29 @@
 package storage
 
 import (
-	"github.com/grafeas/grafeas/samples/server/go-server/api"
-	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
-	"github.com/grafeas/grafeas/samples/server/go-server/api/server/testing"
 	"net/http"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/grafeas/grafeas/samples/server/go-server/api"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/testing"
 )
+
+func TestCreateProject(t *testing.T) {
+	s := NewMemStore()
+	p := "myproject"
+	if err := s.CreateProject(p); err != nil {
+		t.Errorf("CreateProject got %v want success", err)
+	}
+	// Try to insert the same note twice, expect failure.
+	if err := s.CreateProject(p); err == nil {
+		t.Errorf("CreateProject got success, want Error")
+	} else if err.StatusCode != http.StatusBadRequest {
+		t.Errorf("CreateProject got code %v want %v", err.StatusCode, http.StatusBadRequest)
+	}
+}
 
 func TestCreateNote(t *testing.T) {
 	s := NewMemStore()
