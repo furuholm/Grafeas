@@ -38,6 +38,29 @@ func NewMemStore() server.Storager {
 		make(map[string]swagger.Operation)}
 }
 
+func (m *memStore) ListProjects() []string {
+	pIds := make(map[string]bool)
+	for _, o := range m.occurrencesByID {
+		pId, _, err := name.ParseOccurrence(o.Name)
+		if err == nil {
+			pIds[pId] = true
+		}
+	}
+	for _, n := range m.notesByID {
+		pId, _, err := name.ParseNote(n.Name)
+		if err == nil {
+			pIds[pId] = true
+		}
+	}
+	keys := make([]string, len(pIds))
+	i := 0
+	for k := range pIds {
+		keys[i] = k
+		i++
+	}
+	return keys
+}
+
 // CreateOccurrence adds the specified occurrence to the mem store
 func (m *memStore) CreateOccurrence(o *swagger.Occurrence) *errors.AppError {
 	if _, ok := m.occurrencesByID[o.Name]; ok {

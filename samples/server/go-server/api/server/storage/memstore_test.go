@@ -15,13 +15,14 @@
 package storage
 
 import (
-	"github.com/grafeas/grafeas/samples/server/go-server/api"
-	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
-	"github.com/grafeas/grafeas/samples/server/go-server/api/server/testing"
 	"net/http"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/grafeas/grafeas/samples/server/go-server/api"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/testing"
 )
 
 func TestCreateNote(t *testing.T) {
@@ -467,4 +468,48 @@ func TestListNoteOccurrences(t *testing.T) {
 			t.Errorf("ListNoteOccurrences got %v want  %v", o.Name, o.NoteName)
 		}
 	}
+}
+
+func TestListProjects(t *testing.T) {
+	s := NewMemStore()
+	noteProjects := []string{"project1", "duplicate", "another", "overlapping", "duplicate"}
+	occurrenceProjects := []string{"occurrenceproj", "overlapping"}
+
+	for i, projectName := range noteProjects {
+		n := testutil.Note()
+		n.Name = name.FormatNote(projectName, string(i))
+		if err := s.CreateNote(&n); err != nil {
+			t.Fatalf("CreateNote got %v want success", err)
+		}
+	}
+
+	n := testutil.Note()
+	for i, projectName := range occurrenceProjects {
+		o := testutil.Occurrence(n.Name)
+		o.Name = name.FormatOccurrence(projectName, string(i))
+		if err := s.CreateOccurrence(&o); err != nil {
+			t.Fatalf("CreateOccurrence got %v want success", err)
+		}
+	}
+
+	gotPs := s.ListProjects()
+	if len(gotPs) != 5 {
+		t.Errorf("ListProjects got %v Projects, want 5", len(gotPs))
+	}
+
+	allProjects := append(noteProjects, occurrenceProjects...)
+	for _, projectName := range allProjects {
+		if !contains(gotPs, projectName) {
+			t.Fatalf("ListProjects expected to contain %v, but did not", projectName)
+		}
+	}
+}
+
+func contains(haystack []string, needle string) bool {
+	for _, e := range haystack {
+		if e == needle {
+			return true
+		}
+	}
+	return false
 }
