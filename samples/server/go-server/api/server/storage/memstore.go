@@ -17,6 +17,7 @@ package storage
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/grafeas/grafeas/samples/server/go-server/api"
@@ -57,6 +58,17 @@ func (m *memStore) DeleteProject(pID string) *errors.AppError {
 	}
 	delete(m.projects, pID)
 	return nil
+}
+
+func (m *memStore) ListProjects() []string {
+	pIDs := make([]string, len(m.projects))
+	i := 0
+	for k := range m.projects {
+		pIDs[i] = k
+		i++
+	}
+	sort.Strings(pIDs)
+	return pIDs
 }
 
 // CreateOccurrence adds the specified occurrence to the mem store

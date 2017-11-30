@@ -43,6 +43,9 @@ type Storager interface {
 	// GetOperation returns the operation with pID and oID
 	GetOperation(pID, opID string) (*swagger.Operation, *errors.AppError)
 
+	// ListProjects returns the project id for all projects
+	ListProjects() []string
+
 	// ListNoteOccurrences returns the occcurrences on the particular note (nID) for this project (pID)
 	ListNoteOccurrences(pID, nID, filters string) ([]swagger.Occurrence, *errors.AppError)
 
