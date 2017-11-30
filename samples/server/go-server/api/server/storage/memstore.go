@@ -49,6 +49,16 @@ func (m *memStore) CreateProject(pID string) *errors.AppError {
 	return nil
 }
 
+// DeleteProject deletes the project with the given pID from the mem store
+func (m *memStore) DeleteProject(pID string) *errors.AppError {
+	if _, ok := m.projects[pID]; !ok {
+		return &errors.AppError{Err: fmt.Sprintf("Project with name %q does not Exist", pID),
+			StatusCode: http.StatusBadRequest}
+	}
+	delete(m.projects, pID)
+	return nil
+}
+
 // CreateOccurrence adds the specified occurrence to the mem store
 func (m *memStore) CreateOccurrence(o *swagger.Occurrence) *errors.AppError {
 	if _, ok := m.occurrencesByID[o.Name]; ok {
