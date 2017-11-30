@@ -73,6 +73,13 @@ func (m *memStore) ListProjects() []string {
 
 // CreateOccurrence adds the specified occurrence to the mem store
 func (m *memStore) CreateOccurrence(o *swagger.Occurrence) *errors.AppError {
+	if pID, _, err := name.ParseOccurrence(o.Name); err != nil {
+		return &errors.AppError{Err: fmt.Sprintf("Invalid occurrence name %q", o.Name),
+			StatusCode: http.StatusBadRequest}
+	} else if _, ok := m.projects[pID]; !ok {
+		return &errors.AppError{Err: fmt.Sprintf("Project with name %q does not exist", o.Name),
+			StatusCode: http.StatusBadRequest}
+	}
 	if _, ok := m.occurrencesByID[o.Name]; ok {
 		return &errors.AppError{Err: fmt.Sprintf("Occurrence with name %q already exists", o.Name),
 			StatusCode: http.StatusBadRequest}
@@ -126,6 +133,13 @@ func (m *memStore) ListOccurrences(pID, filters string) []swagger.Occurrence {
 
 // CreateNote adds the specified note to the mem store
 func (m *memStore) CreateNote(n *swagger.Note) *errors.AppError {
+	if pID, _, err := name.ParseNote(n.Name); err != nil {
+		return &errors.AppError{Err: fmt.Sprintf("Invalid note name %q", n.Name),
+			StatusCode: http.StatusBadRequest}
+	} else if _, ok := m.projects[pID]; !ok {
+		return &errors.AppError{Err: fmt.Sprintf("Project with name %q does not exist", n.Name),
+			StatusCode: http.StatusBadRequest}
+	}
 	if _, ok := m.notesByID[n.Name]; ok {
 		return &errors.AppError{Err: fmt.Sprintf("Note with name %q already exists", n.Name),
 			StatusCode: http.StatusBadRequest}
@@ -221,6 +235,13 @@ func (m *memStore) GetOperation(pID, opID string) (*swagger.Operation, *errors.A
 
 // CreateOperation adds the specified operation to the mem store
 func (m *memStore) CreateOperation(o *swagger.Operation) *errors.AppError {
+	if pID, _, err := name.ParseOperation(o.Name); err != nil {
+		return &errors.AppError{Err: fmt.Sprintf("Invalid operation name %q", o.Name),
+			StatusCode: http.StatusBadRequest}
+	} else if _, ok := m.projects[pID]; !ok {
+		return &errors.AppError{Err: fmt.Sprintf("Project with name %q does not exist", o.Name),
+			StatusCode: http.StatusBadRequest}
+	}
 	if _, ok := m.opsByID[o.Name]; ok {
 		return &errors.AppError{Err: fmt.Sprintf("Operation with name %q already exists", o.Name),
 			StatusCode: http.StatusBadRequest}

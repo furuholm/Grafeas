@@ -14,10 +14,13 @@
 
 package testutil
 
-import "github.com/grafeas/grafeas/samples/server/go-server/api"
+import (
+	"github.com/grafeas/grafeas/samples/server/go-server/api"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
+)
 
-func Occurrence(noteName string) swagger.Occurrence {
-	return swagger.Occurrence{
+func Occurrence(noteName string) (swagger.Occurrence, string) {
+	occurrence := swagger.Occurrence{
 		Name:        "projects/test-project/occurrences/134",
 		ResourceUrl: "gcr.io/foo/bar",
 		NoteName:    noteName,
@@ -48,10 +51,12 @@ func Occurrence(noteName string) swagger.Occurrence {
 			},
 		},
 	}
+	pID, _, _ := name.ParseOccurrence(occurrence.Name)
+	return occurrence, pID
 }
 
-func Note() swagger.Note {
-	return swagger.Note{
+func Note() (swagger.Note, string) {
+	note := swagger.Note{
 		Name:             "projects/vulnerability-scanner-a/notes/CVE-1999-0710",
 		ShortDescription: "CVE-2014-9911",
 		LongDescription:  "NIST vectors: AV:N/AC:L/Au:N/C:P/I:P",
@@ -152,12 +157,16 @@ func Note() swagger.Note {
 			},
 		},
 	}
+	pID, _, _ := name.ParseNote(note.Name)
+	return note, pID
 }
 
-func Operation() swagger.Operation {
-	return swagger.Operation{
+func Operation() (swagger.Operation, string) {
+	operation := swagger.Operation{
 		Name:     "projects/vulnerability-scanner-a/operations/foo",
 		Metadata: map[string]string{"StartTime": "0916162344"},
 		Done:     false,
 	}
+	pID, _, _ := name.ParseOperation(operation.Name)
+	return operation, pID
 }
